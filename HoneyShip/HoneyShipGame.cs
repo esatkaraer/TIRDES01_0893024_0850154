@@ -1,15 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace HoneyShip
 {
-    public class Game1 : Game
+    public class HoneyShipGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public Game1()
+        public HoneyShipGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -20,6 +21,13 @@ namespace HoneyShip
 
         Vector2 shipPosition;
         Texture2D shipAppearance;
+
+        Vector2 plasmaPosition;
+        Texture2D plasmaAppearance;
+
+        bool isShooting;
+        private float RotationAngle;
+        int count = 0;
 
         protected override void Initialize()
         {
@@ -37,6 +45,10 @@ namespace HoneyShip
 
             shipPosition = new Vector2(300.0f, 200.0f);
             shipAppearance = Content.Load<Texture2D>("ship.png");
+
+            plasmaAppearance = Content.Load<Texture2D>("plasmaSmall.png");
+
+            isShooting = false;
             // TODO: use this.Content to load your game content here
         }
 
@@ -48,10 +60,22 @@ namespace HoneyShip
         protected override void Update(GameTime gameTime)
         {
             KeyboardState ks = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();
+
             if (ks.IsKeyDown(Keys.Escape))
                 Exit();
 
+            if(isShooting)
+            {
+                plasmaPosition += new Vector2(0.0f, -1.0f) * 3.0f;
+            }
+           if(plasmaPosition.Y < 0)
+            {
+                isShooting = false;
+            }
+
             var shipDelta = Vector2.Zero;
+
             if(ks.IsKeyDown(Keys.A))
             {
                 shipDelta += new Vector2(-1.0f, 0.0f);
@@ -68,7 +92,27 @@ namespace HoneyShip
             {
                 shipDelta += new Vector2(0.0f, 1.0f);
             }
+
             shipPosition += shipDelta * 2.0f;
+
+            Vector2 mouseLoc = new Vector2(ms.Position.X, ms.Position.Y); 
+
+            Vector2 direction = (shipPosition) - mouseLoc;
+            RotationAngle = (float)(Math.Atan2(direction.Y, direction.X)); 
+
+            //float circle = MathHelper.Pi * 2;
+            //RotationAngle = count % circle;
+            //count++;
+
+            if(ks.IsKeyDown(Keys.Space))
+            {
+                if(!isShooting)
+                {
+                    isShooting = true;
+                    plasmaPosition = new Vector2(shipPosition.X + 25,shipPosition.Y);
+                }
+            }
+
             base.Update(gameTime);
         }
 
@@ -76,9 +120,18 @@ namespace HoneyShip
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            Vector2 origin = new Vector2();
+            origin.X = shipAppearance.Width / 2;
+            origin.Y = shipAppearance.Height / 2;
+
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
-            spriteBatch.Draw(shipAppearance, shipPosition, Color.Gold);
+            spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f); 
+
+            if (isShooting)
+            {
+                spriteBatch.Draw(plasmaAppearance, plasmaPosition, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
