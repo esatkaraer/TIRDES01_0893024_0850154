@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace HoneyShip
 {
@@ -22,15 +23,15 @@ namespace HoneyShip
 
         Vector2 shipPosition;
         Texture2D shipAppearance;
-
-        Texture2D plasmaAppearance;
+        Vector2 shipDelta;
+        Texture2D bulletAppearance;
 
         private float rotationAngle;
 
+        List<Bullet> bullets = new List<Bullet>();
+        int bulletDelayer = 15;
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -44,7 +45,7 @@ namespace HoneyShip
             shipPosition = new Vector2(300.0f, 200.0f);
             shipAppearance = Content.Load<Texture2D>("ship.png");
 
-            plasmaAppearance = Content.Load<Texture2D>("plasmaSmall.png");
+            bulletAppearance = Content.Load<Texture2D>("plasma.png");
 
             gameFont = Content.Load<SpriteFont>("spaceFont");
 
@@ -63,8 +64,8 @@ namespace HoneyShip
             if (ks.IsKeyDown(Keys.Escape))
                 Exit();
 
-            var shipDelta = Vector2.Zero;
 
+            shipDelta = Vector2.Zero;
             if(ks.IsKeyDown(Keys.A))
             {
                 shipDelta += new Vector2(-1.0f, 0.0f);
@@ -82,18 +83,49 @@ namespace HoneyShip
                 shipDelta += new Vector2(0.0f, 1.0f);
             }
 
-            if(ms.LeftButton == ButtonState.Pressed)
-            {
-                //if left button is clicked : shooooooot :D
-
-            }
-
             shipPosition += shipDelta * 2.0f;
-
+            if (!Window.ClientBounds.Contains(shipPosition))
+            {
+                Exit();
+            }
             Vector2 mouseLoc = new Vector2(ms.Position.X, ms.Position.Y);
             rotationAngle = MathHelper.ToDegrees((float)Math.Atan2(mouseLoc.Y - shipPosition.Y, mouseLoc.X - shipPosition.X));
 
+            if(ms.LeftButton == ButtonState.Pressed)
+            {
+                shoot();
+            }
+           
             base.Update(gameTime);
+        }
+
+        public void shoot()
+        {
+            if (bulletDelayer == 0)
+            {
+                if (bullets.Count < 20)
+                {
+                    Bullet bullet = new Bullet(bulletAppearance);
+                    bullet.position = shipPosition;
+                    bullet.direction = new Vector2((float)Math.Cos(MathHelper.ToRadians(rotationAngle)), (float)Math.Sin(MathHelper.ToRadians(rotationAngle))) * 4f;
+                    bullet.isVisible = true;
+                    bullets.Add(bullet);
+                }
+                bulletDelayer = 15;
+            }
+            bulletDelayer--;
+        }
+
+        public void updateBullets()
+        {
+            foreach (Bullet b in bullets)
+            {
+                b.position += b.direction;
+                if(!Window.ClientBounds.Contains(b.position))
+                {
+                    b.isVisible = false;
+                }
+            }
         }
 
         protected override void Draw(GameTime gameTime)
@@ -104,11 +136,23 @@ namespace HoneyShip
             origin.X = shipAppearance.Width / 2;
             origin.Y = shipAppearance.Height / 2;
 
+            float mousePositionAngle = MathHelper.ToRadians(rotationAngle) + MathHelper.PiOver2;
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
-            spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, MathHelper.ToRadians(rotationAngle) + MathHelper.PiOver2, origin, 1.0f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle, origin, 1.0f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(gameFont, "Degrees : " + rotationAngle , new Vector2(10, 10), Color.White);
-
+            foreach(Bullet b in bullets)
+            {
+                b.draw(spriteBatch);
+            }
+            updateBullets();
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                if (!bullets[i].isVisible)
+                {
+                    bullets.RemoveAt(i);
+                }
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
