@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 
@@ -25,10 +26,17 @@ namespace HoneyShip
         Texture2D shipAppearance;
         Vector2 shipDelta;
         Texture2D bulletAppearance;
+        Texture2D asteroidAppearance;
+        Vector2 asteroidTopSpawnerPos;
+
+        Song bgMusic;
 
         private float rotationAngle;
 
         List<Bullet> bullets = new List<Bullet>();
+        //list aanmaken voor alle astroids
+        List<Asteroid> asteroidList = new List<Asteroid>();
+
         int bulletDelayer = 15;
         protected override void Initialize()
         {
@@ -47,8 +55,13 @@ namespace HoneyShip
 
             bulletAppearance = Content.Load<Texture2D>("plasma.png");
 
-            gameFont = Content.Load<SpriteFont>("spaceFont");
+            asteroidAppearance = Content.Load<Texture2D>("asteroid.png");
+            asteroidTopSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, 10);
 
+            // = Content.Load<Song>("ascendency.wma");
+            //MediaPlayer.Play(bgMusic);
+
+            gameFont = Content.Load<SpriteFont>("spaceFont");
         }
 
         protected override void UnloadContent()
@@ -95,7 +108,9 @@ namespace HoneyShip
             {
                 shoot();
             }
-           
+
+            spawnAstroids();
+
             base.Update(gameTime);
         }
 
@@ -128,6 +143,32 @@ namespace HoneyShip
             }
         }
 
+        public void spawnAstroids()
+        {
+            //maken van asteroide; denk aan richting en snelheid
+            // locatie waar de asteroide plaatsvindt
+            Random random = new Random();
+            int degree = random.Next(0, 181);
+            float asteroidSpeed = (float)random.NextDouble();
+
+            Asteroid asteroid = new Asteroid(asteroidAppearance);
+            asteroid.position = asteroidTopSpawnerPos;
+            asteroid.direction = new Vector2((float)Math.Cos(MathHelper.ToRadians(degree)), (float)Math.Sin(MathHelper.ToRadians(degree))) * asteroidSpeed;
+            asteroid.isVisible = true;
+            asteroidList.Add(asteroid);
+        }
+        public void updateAstroid()
+        {
+            foreach (Asteroid a in asteroidList)
+            {
+                a.position += a.direction;
+                if(!Window.ClientBounds.Contains(a.position))
+                {
+                    a.isVisible = false;
+                }
+            }
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -136,12 +177,33 @@ namespace HoneyShip
             origin.X = shipAppearance.Width / 2;
             origin.Y = shipAppearance.Height / 2;
 
+            Vector2 astroidOrigin = new Vector2();
+            astroidOrigin.X = asteroidAppearance.Width / 2;
+            astroidOrigin.Y = asteroidAppearance.Height / 2;
+
+
             float mousePositionAngle = MathHelper.ToRadians(rotationAngle) + MathHelper.PiOver2;
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
             spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle, origin, 1.0f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(gameFont, "Degrees : " + rotationAngle , new Vector2(10, 10), Color.White);
-            foreach(Bullet b in bullets)
+
+            foreach(Asteroid a in asteroidList)
+            {
+                a.draw(spriteBatch);
+            }
+
+            updateAstroid();
+
+            for (int i = 0; i < asteroidList.Count; i++)
+            {
+                if(!asteroidList[i].isVisible)
+                {
+                    asteroidList.RemoveAt(i);
+                }
+            }
+
+            foreach (Bullet b in bullets)
             {
                 b.draw(spriteBatch);
             }
