@@ -12,6 +12,7 @@ namespace HoneyShip
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont gameFont;
+
         public HoneyShipGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -28,6 +29,14 @@ namespace HoneyShip
         Texture2D bulletAppearance;
         Texture2D asteroidAppearance;
         Vector2 asteroidTopSpawnerPos;
+        int gameLogicScriptPC = 0;
+        int rndNumberLine1, iLine1;
+        int rndNumberLine5, iLine5;
+        float timeToWaitLine3, timeToWaitLine4, timeToWaitLine8, timeToWaitLine7;
+
+        Random randomGenerator = new Random();
+        List<Vector2> asteroidPositions = new List<Vector2>();
+        List<Vector2> plasmaPositions = new List<Vector2>();
 
         Song bgMusic;
 
@@ -76,6 +85,34 @@ namespace HoneyShip
 
             if (ks.IsKeyDown(Keys.Escape))
                 Exit();
+
+            var newPlasmaPositions =
+                (from plasmaPosition in plasmaPositions
+                 let colliders =
+                    from asteroidPsotion in asteroidPsotitions
+                    where Vector2.Distance(plasmaPosition, asteroidPosition) < 20.0f
+                    select asteroidPosition
+                 where plasmaPosition.X > 50.0f &&
+                        plasmaPsotion.X < 600.0f &&
+                        plasmaPosition.Y > 50.0f &&
+                        plasmaPosition.Y < 600.0f &&
+                        colliders.Count() == 0
+                 select plasmaPosition - Vector2.UnitY * 200.0f * deltaTime).ToList();
+            if (ks.IsKeyDown(Keys.Space))
+                newPlasmaPositions.Add(shipPosition);
+
+            var newAsteroidPsotions =
+                (from asteroidPosition in asteroidPositions
+                 let colldiers =
+                    from plasmaPosition in newPlasmaPositions
+                    where Vector2.Distance(plasmaPosition, asteroidPosition) < 20.0f
+                    select plasmaPosition
+                 where asteroidPosition.X > 50.0f &&
+                       asteroidPosition.X < 600.0f &&
+                       asteroidPosition.Y > 50.0f &&
+                       asteroidPosition.Y < 600.0f &&
+                       colliders.Count() == 0
+                 select asteroidPosition + Vector2.UnitY * 100.0f * deltaTime).ToList();
 
 
             shipDelta = Vector2.Zero;
@@ -159,14 +196,14 @@ namespace HoneyShip
         }
         public void updateAstroid()
         {
-            foreach (Asteroid a in asteroidList)
+         /*   foreach (Asteroid a in asteroidList)
             {
                 a.position += a.direction;
                 if(!Window.ClientBounds.Contains(a.position))
                 {
                     a.isVisible = false;
                 }
-            }
+            }*/
         }
 
         protected override void Draw(GameTime gameTime)
@@ -215,6 +252,44 @@ namespace HoneyShip
                     bullets.RemoveAt(i);
                 }
             }
+
+            switch(gameLogicScriptPC)
+            {
+                case 0:
+                    if (true)
+                    {
+                        gameLogicScriptPC = 1;
+                        iLine1 = 1;
+                        rndNumberLine1 = randomGenerator.Next(20, 60);
+                    }
+                    else
+                    {
+                        gameLogicScriptPC = 9;
+                    }
+                    break;
+                case 1:
+                    if (iLine1 <= rndNumberLine1)
+                    {
+                        gameLogicScriptPC = 2;
+                    }
+                    else
+                    {
+                        gameLogicScriptPC = 4;
+                        timeToWaitLine4 = (float)(randomGenerator.NextDouble() * 2.0 + 5.0);
+                    }
+                    break;
+                case 2:
+                    newAsteroidPositition.Add(new Vector2((float)(randomGenerator.NextDouble() * 500.0 + 51.0), 51.0f)));
+                    gameLogicScriptPC = 3;
+                    timeToWaitLine3 = (float)(randomGenerator.NextDouble() * 0.2 + 0.1);
+                    break;
+                case 3:
+                    timeToWaitLine3 = (float)(randomGenerator.NextDouble() * 0.2 + 0.1);
+                    xczxcxcxczxczxczczxcxzczxczxczxczxcczc
+            }
+
+            plasmaPositions = newPlasmaPositions;
+            asteroidPositions = newAsteroidPositions;
             spriteBatch.End();
 
             base.Draw(gameTime);
