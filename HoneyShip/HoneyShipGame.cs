@@ -160,7 +160,7 @@ namespace HoneyShip
                     bullet.isVisible = true;
                     bullets.Add(bullet);
 
-                    SoundPlayer gunEffect = new SoundPlayer(@"C:\Users\Esat\Desktop\science_fiction_laser_007.wav");
+                    SoundPlayer gunEffect = new SoundPlayer(@"C:\Users\RHEA\Desktop\science_fiction_laser_007.wav");
                     gunEffect.Play();
                 }
                 bulletDelayer = 15;
