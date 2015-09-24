@@ -32,8 +32,10 @@ namespace HoneyShip
         public HoneyShipGame()
         {
             graphics = new GraphicsDeviceManager(this);
+            //graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            
         }
 
         Vector2 backgroundPosition;
@@ -52,7 +54,8 @@ namespace HoneyShip
         Song bgMusic;
 
         float friction = 0.1f;
-
+        float mousePositionAngle;
+        int score = 0;
         private float rotationAngle;
 
         List<Bullet> bullets = new List<Bullet>();
@@ -109,23 +112,26 @@ namespace HoneyShip
             if (ks.IsKeyDown(Keys.Escape))
                 Exit();
 
+            Vector2 mouseLoc = new Vector2(ms.Position.X, ms.Position.Y);
+            rotationAngle = (float)Math.Atan2(mouseLoc.Y - shipPosition.Y, mouseLoc.X - shipPosition.X);
+            mousePositionAngle = rotationAngle;
 
             shipDelta = Vector2.Zero;
             if(ks.IsKeyDown(Keys.A))
             {
-                shipDelta += new Vector2(-1.0f, 0.0f);
+                shipDelta += new Vector2((float)Math.Cos((rotationAngle) + MathHelper.PiOver2), (float)Math.Sin((rotationAngle + MathHelper.PiOver2)));
             }
             if (ks.IsKeyDown(Keys.D))
             {
-                shipDelta += new Vector2(1.0f, 0.0f);
+                shipDelta += new Vector2((float)Math.Cos((rotationAngle) - MathHelper.PiOver2), (float)Math.Sin((rotationAngle - MathHelper.PiOver2)));
             } 
             if (ks.IsKeyDown(Keys.W))
             {
-                shipDelta += new Vector2(0.0f, -1.0f);
+                shipDelta += new Vector2((float)Math.Cos((rotationAngle)), (float)Math.Sin((rotationAngle)));
             } 
             if (ks.IsKeyDown(Keys.S))
             {
-                shipDelta += new Vector2(0.0f, 1.0f);
+                shipDelta += new Vector2(-(float)Math.Cos((rotationAngle)), -(float)Math.Sin((rotationAngle)));
             }
 
             shipPosition += shipDelta * 2.0f;
@@ -134,9 +140,6 @@ namespace HoneyShip
             {
                 Exit();
             }
-
-            Vector2 mouseLoc = new Vector2(ms.Position.X, ms.Position.Y);
-            rotationAngle = MathHelper.ToDegrees((float)Math.Atan2(mouseLoc.Y - shipPosition.Y, mouseLoc.X - shipPosition.X));
 
             if(ms.LeftButton == ButtonState.Pressed)
             {
@@ -156,7 +159,7 @@ namespace HoneyShip
                 {
                     Bullet bullet = new Bullet(bulletAppearance);
                     bullet.position = shipPosition;
-                    bullet.direction = new Vector2((float)Math.Cos(MathHelper.ToRadians(rotationAngle)), (float)Math.Sin(MathHelper.ToRadians(rotationAngle))) * 4f;
+                    bullet.direction = new Vector2((float)Math.Cos((rotationAngle)), (float)Math.Sin((rotationAngle))) * 4f;
                     bullet.isVisible = true;
                     bullets.Add(bullet);
 
@@ -301,7 +304,7 @@ namespace HoneyShip
 
             Asteroid asteroid = new Asteroid(asteroidAppearance);
             asteroid.position = spawnerLocation;
-            asteroid.direction = new Vector2((float)Math.Cos(MathHelper.ToRadians(degree)), (float)Math.Sin(MathHelper.ToRadians(degree))) * asteroidSpeed;
+            asteroid.direction = new Vector2((float)Math.Cos((degree)), (float)Math.Sin((degree))) * asteroidSpeed;
             asteroid.isVisible = true;
             asteroidList.Add(asteroid);
         }
@@ -322,6 +325,7 @@ namespace HoneyShip
                     {
                         a.isVisible = false;
                         b.isVisible = false;
+                        score += 50;
                     }
                 }
                 if (Vector2.Distance(a.position, shipPosition) < 20.0f)
@@ -345,11 +349,10 @@ namespace HoneyShip
             astroidOrigin.Y = asteroidAppearance.Height / 2;
 
 
-            float mousePositionAngle = MathHelper.ToRadians(rotationAngle) + MathHelper.PiOver2;
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
-            spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle, origin, 1.0f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(gameFont, "Aantal x geraakt : " + aantalXGeraakt, new Vector2(10, 10), Color.White);
+            spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle + MathHelper.PiOver2, origin, 1.0f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(gameFont, "Score : " + score, new Vector2(10, 10), Color.White);
 
             foreach(Asteroid a in asteroidList)
             {
