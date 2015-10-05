@@ -20,14 +20,26 @@ namespace HoneyShip
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont gameFont;
-        int aantalXGeraakt = 0;
+        int hitCount = 0;
         Random randomGenerator = new Random();
+
+        //Asteroid spawn script variables
         int gameLogicScriptPC = 0;
         int rndNumberLine1, iLine1;
         float timeToWaitLine3, timeToWaitLine4, timeToWaitLine8, timeToWaitLine7;
         int rndNumberLine5, iLine5;
 
+        //Powerup spawn script variables
+        int powerUPScriptPC = 0;
+        int iLine1PowerUP,rndNumberLine1PowerUP;
+        float timeToWaitLine3PowerUP, timeToWaitLine4PowerUP;
+
         float deltaTime;
+        float rotationAngle;
+        float mousePositionAngle;
+
+        InputController input =
+           new MainController();
 
         public HoneyShipGame()
         {
@@ -40,10 +52,8 @@ namespace HoneyShip
 
         Vector2 backgroundPosition;
         Texture2D backgroundAppearance;
-
         Vector2 shipPosition;
         Texture2D shipAppearance;
-        Vector2 shipDelta;
         Texture2D bulletAppearance;
         Texture2D asteroidAppearance;
         Vector2 asteroidTopSpawnerPos;
@@ -51,18 +61,19 @@ namespace HoneyShip
         Vector2 asteroidLeftSpawnerPos;
         Vector2 asteroidRightSpawnerPos;
 
+        Texture2D powerUpAppearance;
+
         Song bgMusic;
 
         float friction = 0.1f;
-        float mousePositionAngle;
         int score = 0;
-        private float rotationAngle;
-
-        List<Bullet> bullets = new List<Bullet>();
+        int oldScore = 250;
+        List<Entity> bullets = new List<Entity>();
         //list aanmaken voor alle astroids
-        List<Asteroid> asteroidList = new List<Asteroid>();
-
+        List<Entity> asteroidList = new List<Entity>();
+        List<Entity> powerUPs = new List<Entity>();
         int bulletDelayer = 15;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -73,15 +84,16 @@ namespace HoneyShip
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             backgroundPosition = new Vector2(-150.0f,-150.0f);
-
+            shipPosition = new Vector2(300.0f, 200.0f);
             backgroundAppearance = Content.Load<Texture2D>("background.jpg");
 
-            shipPosition = new Vector2(300.0f, 200.0f);
             shipAppearance = Content.Load<Texture2D>("ship.png");
 
             bulletAppearance = Content.Load<Texture2D>("plasma.png");
 
             asteroidAppearance = Content.Load<Texture2D>("asteroid.png");
+
+            powerUpAppearance = Content.Load<Texture2D>("powerup.png");
 
             asteroidTopSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, -49);
             asteroidLeftSpawnerPos = new Vector2(-49, Window.ClientBounds.Height / 2);
@@ -105,49 +117,27 @@ namespace HoneyShip
 
         protected override void Update(GameTime gameTime)
         {
-            KeyboardState ks = Keyboard.GetState();
-            MouseState ms = Mouse.GetState();
             deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (ks.IsKeyDown(Keys.Escape))
-                Exit();
-
-            Vector2 mouseLoc = new Vector2(ms.Position.X, ms.Position.Y);
+            input.Update(deltaTime);
+            Vector2 mouseLoc = new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
             rotationAngle = (float)Math.Atan2(mouseLoc.Y - shipPosition.Y, mouseLoc.X - shipPosition.X);
             mousePositionAngle = rotationAngle;
 
-            shipDelta = Vector2.Zero;
-            if(ks.IsKeyDown(Keys.A))
-            {
-                shipDelta += new Vector2((float)Math.Cos((rotationAngle) + MathHelper.PiOver2), (float)Math.Sin((rotationAngle + MathHelper.PiOver2)));
-            }
-            if (ks.IsKeyDown(Keys.D))
-            {
-                shipDelta += new Vector2((float)Math.Cos((rotationAngle) - MathHelper.PiOver2), (float)Math.Sin((rotationAngle - MathHelper.PiOver2)));
-            } 
-            if (ks.IsKeyDown(Keys.W))
-            {
-                shipDelta += new Vector2((float)Math.Cos((rotationAngle)), (float)Math.Sin((rotationAngle)));
-            } 
-            if (ks.IsKeyDown(Keys.S))
-            {
-                shipDelta += new Vector2(-(float)Math.Cos((rotationAngle)), -(float)Math.Sin((rotationAngle)));
-            }
+            shipPosition += input.ShipMovement(rotationAngle) * 2.0f;
 
-            shipPosition += shipDelta * 2.0f;
+            if(input.isShooting)
+            {
+                shoot();
+            }
 
             if (!Window.ClientBounds.Contains(shipPosition))
             {
                 Exit();
             }
 
-            if(ms.LeftButton == ButtonState.Pressed)
-            {
-                shoot();
-            }
 
             spawnAstroids();
-
+            spawnPowerUP();
             base.Update(gameTime);
         }
 
@@ -157,7 +147,7 @@ namespace HoneyShip
             {
                 if (bullets.Count < 20)
                 {
-                    Bullet bullet = new Bullet(bulletAppearance);
+                    Entity bullet = new Entity(bulletAppearance);
                     bullet.position = shipPosition;
                     bullet.direction = new Vector2((float)Math.Cos((rotationAngle)), (float)Math.Sin((rotationAngle))) * 4f;
                     bullet.isVisible = true;
@@ -173,7 +163,7 @@ namespace HoneyShip
 
         public void updateBullets()
         {
-            foreach (Bullet b in bullets)
+            foreach (Entity b in bullets)
             {
                 b.position += b.direction;
                 if(!Window.ClientBounds.Contains(b.position))
@@ -275,6 +265,77 @@ namespace HoneyShip
             // locatie waar de asteroide plaatsvindt
         }
 
+        public void spawnPowerUP()
+        {
+            if(score >= (oldScore * 2))
+            {
+                oldScore = score;
+                createPowerUP();
+            }
+            /*switch (powerUPScriptPC)
+            {
+                case 0:
+                    if (true)
+                    {
+                        //for(int iLine1PowerUP = 1)
+                        powerUPScriptPC = 1;
+                        iLine1PowerUP = 1;
+                        rndNumberLine1PowerUP = randomGenerator.Next(10,30 );
+                    }
+                    else
+                        powerUPScriptPC = 5;
+                    break;
+                case 1:
+                    //for(int iLinePowerUP = 1; iLine1PowerUP <= rndNumberLine1PowerUP;)
+                    if (iLine1PowerUP <= rndNumberLine1PowerUP)
+                        powerUPScriptPC = 2;
+                    else
+                    {
+                        powerUPScriptPC = 4;
+                        timeToWaitLine4PowerUP = (float)(randomGenerator.NextDouble() * 4.0 + 5.0);
+                    }
+                    break;
+                case 2:
+                    //maak powerup aan
+                    createPowerUP();
+                    timeToWaitLine4 -= deltaTime;
+                    powerUPScriptPC = 3;
+                    timeToWaitLine3PowerUP = (float)(randomGenerator.NextDouble() * 2.0 + 0.5);
+                    break;
+                case 3:
+                    timeToWaitLine3PowerUP -= deltaTime;
+                    if (timeToWaitLine3PowerUP > 0.0f)
+                        powerUPScriptPC = 3;
+                    else
+                    {
+                        powerUPScriptPC = 1;
+                        //for(int iLinePowerUP = 1; iLine1PowerUP <= rndNumberLine1PowerUP;iLine1PowerUP++)
+                        iLine1PowerUP++;
+                    }
+                    break;
+                case 4:
+                    timeToWaitLine4 -= deltaTime;
+                    if (timeToWaitLine4PowerUP > 0.0f)
+                        powerUPScriptPC = 4;
+                    else
+                    {
+                        powerUPScriptPC = 0;
+                    }
+                    break;
+            }*/
+        }
+
+        public void createPowerUP()
+        {
+            Entity powerUP = new Entity(powerUpAppearance);
+            powerUP.position = asteroidTopSpawnerPos;
+            int degree = randomGenerator.Next(0, 181);
+            float powerUPSpeed = (float)randomGenerator.NextDouble();
+            powerUP.direction = new Vector2((float)Math.Cos((degree)), (float)Math.Sin((degree))) * (powerUPSpeed + 0.5f);
+            powerUP.isVisible = true;
+            powerUPs.Add(powerUP);
+        }
+
         public void createAstroid(int spawnerID)
         {
             Vector2 spawnerLocation = Vector2.Zero;
@@ -302,7 +363,7 @@ namespace HoneyShip
             
             float asteroidSpeed = (float)randomGenerator.NextDouble();
 
-            Asteroid asteroid = new Asteroid(asteroidAppearance);
+            Entity asteroid = new Entity(asteroidAppearance);
             asteroid.position = spawnerLocation;
             asteroid.direction = new Vector2((float)Math.Cos((degree)), (float)Math.Sin((degree))) * asteroidSpeed;
             asteroid.isVisible = true;
@@ -311,7 +372,7 @@ namespace HoneyShip
 
         public void updateAstroid()
         {
-            foreach (Asteroid a in asteroidList)
+            foreach (Entity a in asteroidList)
             {
                 a.position += a.direction;
                 Rectangle offSetRec = new Rectangle(Window.ClientBounds.X -50,Window.ClientBounds.Y - 50,Window.ClientBounds.Width + 100,Window.ClientBounds.Height + 100);
@@ -319,7 +380,7 @@ namespace HoneyShip
                 {
                     a.isVisible = false;
                 }
-                foreach(Bullet b in bullets)
+                foreach(Entity b in bullets)
                 {
                     if(Vector2.Distance(b.position,a.position) < 20.0f)
                     {
@@ -330,8 +391,27 @@ namespace HoneyShip
                 }
                 if (Vector2.Distance(a.position, shipPosition) < 20.0f)
                 {
-                    aantalXGeraakt++;
+                    hitCount++;
                     a.isVisible = false;
+                }
+            }
+        }
+
+        public void updatePowerUP()
+        {
+            foreach (Entity up in powerUPs)
+            {
+                up.position += up.direction;
+                Rectangle offSetRec = new Rectangle(Window.ClientBounds.X - 50, Window.ClientBounds.Y - 50, Window.ClientBounds.Width + 100, Window.ClientBounds.Height + 100);
+                if (!offSetRec.Contains(up.position))
+                {
+                    up.isVisible = false;
+                }
+                
+                if (Vector2.Distance(up.position, shipPosition) < 20.0f)
+                {
+                    // TODO : powerup weapon
+                    up.isVisible = false;
                 }
             }
         }
@@ -339,8 +419,8 @@ namespace HoneyShip
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             Vector2 origin = new Vector2();
+
             origin.X = shipAppearance.Width / 2;
             origin.Y = shipAppearance.Height / 2;
 
@@ -353,8 +433,21 @@ namespace HoneyShip
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
             spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle + MathHelper.PiOver2, origin, 1.0f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(gameFont, "Score : " + score, new Vector2(10, 10), Color.White);
+            
+            foreach (Entity pu in powerUPs)
+            {
+                pu.draw(spriteBatch);
+            }
 
-            foreach(Asteroid a in asteroidList)
+            updatePowerUP();
+            for (int i = 0; i < powerUPs.Count; i++)
+            {
+                if (!powerUPs[i].isVisible)
+                {
+                    powerUPs.RemoveAt(i);
+                }
+            }
+            foreach(Entity a in asteroidList)
             {
                 a.draw(spriteBatch);
             }
@@ -369,7 +462,7 @@ namespace HoneyShip
                 }
             }
 
-            foreach (Bullet b in bullets)
+            foreach (Entity b in bullets)
             {
                 b.draw(spriteBatch);
             }

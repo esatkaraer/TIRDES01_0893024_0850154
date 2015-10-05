@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HoneyShip
 {
-    public class Bullet
+    public class Entity
     {
         public Texture2D appearance;
 
@@ -16,7 +16,7 @@ namespace HoneyShip
 
         public Boolean isVisible;
 
-        public Bullet(Texture2D texture)
+        public Entity(Texture2D texture)
         {
             appearance = texture;
         }
@@ -26,7 +26,7 @@ namespace HoneyShip
             Vector2 origin = new Vector2();
             origin.X = appearance.Width / 2;
             origin.Y = appearance.Height / 2;
-            spriteBatch.Draw(appearance, position, null, Color.White, 0.0f, origin,1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(appearance, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
         }
     }
 }
