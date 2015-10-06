@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DualBlaster.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GamepadController.cs" />
     <Compile Include="HoneyShipGame.cs" />
@@ -45,6 +46,9 @@
     <Compile Include="MainController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Blaster.cs" />
+    <Compile Include="SoloBlaster.cs" />
+    <Compile Include="Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

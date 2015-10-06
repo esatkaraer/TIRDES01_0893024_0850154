@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HoneyShip.HoneyShip;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -67,13 +68,11 @@ namespace HoneyShip
 
         float friction = 0.1f;
         int score = 0;
-        int oldScore = 250;
         List<Entity> bullets = new List<Entity>();
         //list aanmaken voor alle astroids
         List<Entity> asteroidList = new List<Entity>();
         List<Entity> powerUPs = new List<Entity>();
-        int bulletDelayer = 15;
-
+        Weapon<Entity> currentWeapon;
         protected override void Initialize()
         {
             base.Initialize();
@@ -94,7 +93,7 @@ namespace HoneyShip
             asteroidAppearance = Content.Load<Texture2D>("asteroid.png");
 
             powerUpAppearance = Content.Load<Texture2D>("powerup.png");
-
+            currentWeapon = new DualBlaster(Content);
             asteroidTopSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, -49);
             asteroidLeftSpawnerPos = new Vector2(-49, Window.ClientBounds.Height / 2);
             asteroidRightSpawnerPos = new Vector2(Window.ClientBounds.Width + 49, Window.ClientBounds.Height / 2);
@@ -125,10 +124,12 @@ namespace HoneyShip
 
             shipPosition += input.ShipMovement(rotationAngle) * 2.0f;
 
+            currentWeapon.Update(deltaTime, shipPosition,rotationAngle,bulletAppearance);
             if(input.isShooting)
             {
-                shoot();
+                    currentWeapon.pullTrigger();
             }
+            bullets.AddRange(currentWeapon.newBullets());
 
             if (!Window.ClientBounds.Contains(shipPosition))
             {
@@ -143,22 +144,7 @@ namespace HoneyShip
 
         public void shoot()
         {
-            if (bulletDelayer == 0)
-            {
-                if (bullets.Count < 20)
-                {
-                    Entity bullet = new Entity(bulletAppearance);
-                    bullet.position = shipPosition;
-                    bullet.direction = new Vector2((float)Math.Cos((rotationAngle)), (float)Math.Sin((rotationAngle))) * 4f;
-                    bullet.isVisible = true;
-                    bullets.Add(bullet);
 
-                    SoundPlayer gunEffect = new SoundPlayer(@"C:\Users\RHEA\Desktop\science_fiction_laser_007.wav");
-                    gunEffect.Play();
-                }
-                bulletDelayer = 15;
-            }
-            bulletDelayer--;
         }
 
         public void updateBullets()
@@ -267,12 +253,7 @@ namespace HoneyShip
 
         public void spawnPowerUP()
         {
-            if(score >= (oldScore * 2))
-            {
-                oldScore = score;
-                createPowerUP();
-            }
-            /*switch (powerUPScriptPC)
+            switch (powerUPScriptPC)
             {
                 case 0:
                     if (true)
@@ -292,15 +273,18 @@ namespace HoneyShip
                     else
                     {
                         powerUPScriptPC = 4;
-                        timeToWaitLine4PowerUP = (float)(randomGenerator.NextDouble() * 4.0 + 5.0);
+                        timeToWaitLine4PowerUP = (float)(randomGenerator.NextDouble() * 2.0 + 10.0);
                     }
                     break;
                 case 2:
                     //maak powerup aan
-                    createPowerUP();
+                    if(powerUPs.Count < 1)
+                    {
+                        createPowerUP();
+                    }
                     timeToWaitLine4 -= deltaTime;
                     powerUPScriptPC = 3;
-                    timeToWaitLine3PowerUP = (float)(randomGenerator.NextDouble() * 2.0 + 0.5);
+                    timeToWaitLine3PowerUP = (float)(randomGenerator.NextDouble() * 4.0 + 0.5);
                     break;
                 case 3:
                     timeToWaitLine3PowerUP -= deltaTime;
@@ -322,7 +306,7 @@ namespace HoneyShip
                         powerUPScriptPC = 0;
                     }
                     break;
-            }*/
+            }
         }
 
         public void createPowerUP()
@@ -361,7 +345,7 @@ namespace HoneyShip
 
             }
             
-            float asteroidSpeed = (float)randomGenerator.NextDouble();
+            float asteroidSpeed = (float)randomGenerator.NextDouble() + 0.3f;
 
             Entity asteroid = new Entity(asteroidAppearance);
             asteroid.position = spawnerLocation;
