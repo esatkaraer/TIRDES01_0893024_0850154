@@ -93,7 +93,7 @@ namespace HoneyShip
             asteroidAppearance = Content.Load<Texture2D>("asteroid.png");
 
             powerUpAppearance = Content.Load<Texture2D>("powerup.png");
-            currentWeapon = new DualBlaster(Content);
+            currentWeapon = new SoloBlaster(Content);
             asteroidTopSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, -49);
             asteroidLeftSpawnerPos = new Vector2(-49, Window.ClientBounds.Height / 2);
             asteroidRightSpawnerPos = new Vector2(Window.ClientBounds.Width + 49, Window.ClientBounds.Height / 2);
@@ -102,9 +102,10 @@ namespace HoneyShip
             // = Content.Load<Song>("ascendency.wma");
             //MediaPlayer.Play(bgMusic);
 
-            mciSendString(@"open C:\Users\Esat\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
+            mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
             mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
 
+         
    
             gameFont = Content.Load<SpriteFont>("spaceFont");
         }
@@ -118,7 +119,7 @@ namespace HoneyShip
         {
             deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             input.Update(deltaTime);
-            Vector2 mouseLoc = new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
+            Vector2 mouseLoc = new Vector2(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X, Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y);
             rotationAngle = (float)Math.Atan2(mouseLoc.Y - shipPosition.Y, mouseLoc.X - shipPosition.X);
             mousePositionAngle = rotationAngle;
 
@@ -128,6 +129,7 @@ namespace HoneyShip
             if(input.isShooting)
             {
                     currentWeapon.pullTrigger();
+
             }
             bullets.AddRange(currentWeapon.newBullets());
 
