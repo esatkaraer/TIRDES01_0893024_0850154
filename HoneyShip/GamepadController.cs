@@ -1,31 +1,40 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace HoneyShip
 {
-    class GamepadController : InputController
+    /*class MainController : InputController
     {
+        GamePadState gs;
 
         public bool Quit
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return false;
+            }
         }
 
-        public Microsoft.Xna.Framework.Vector2 ShipMovement(float rotationAngle)
+        public Vector2 ShipMovement(float rotationAngle)
         {
-            throw new NotImplementedException();
+            return new Vector2(0, 0);
         }
 
         public bool isShooting
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return false;
+            }
         }
 
         public void Update(float dt)
         {
-            throw new NotImplementedException();
+            gs = GamePad.GetState(PlayerIndex.One);
         }
-    }
+    }*/
 }
