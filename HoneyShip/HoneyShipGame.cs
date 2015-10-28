@@ -1,4 +1,6 @@
 ﻿using HoneyShip.HoneyShip;
+using HoneyShip.Scripts;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +15,13 @@ using System.Text;
 
 namespace HoneyShip
 {
+    enum InstructionResult
+    {
+        Done,
+        DoneAndCreateAsteroid,
+        Running,
+        RunningAndCreateAsteroid
+    }
     public class HoneyShipGame : Game
     {
         [DllImport("winmm.dll")]
@@ -23,17 +32,18 @@ namespace HoneyShip
         SpriteFont gameFont;
         int hitCount = 0;
         Random randomGenerator = new Random();
-
-        //Asteroid spawn script variables
+        List<Weapon<Entity>> weaponsList = new List<Weapon<Entity>>();
+        int currentWeaponIndex = 0;
+        /*Asteroid spawn script variables
         int gameLogicScriptPC = 0;
         int rndNumberLine1, iLine1;
         float timeToWaitLine3, timeToWaitLine4, timeToWaitLine8, timeToWaitLine7;
         int rndNumberLine5, iLine5;
 
-        //Powerup spawn script variables
+        Powerup spawn script variables
         int powerUPScriptPC = 0;
         int iLine1PowerUP,rndNumberLine1PowerUP;
-        float timeToWaitLine3PowerUP, timeToWaitLine4PowerUP;
+        float timeToWaitLine3PowerUP, timeToWaitLine4PowerUP;*/
 
         float deltaTime;
         float rotationAngle;
@@ -50,6 +60,25 @@ namespace HoneyShip
             IsMouseVisible = true;
             
         }
+
+        static Random rand = new Random();
+        Instruction astroidSpawnLogic =
+          new Repeat(
+              new For(0, 10, i =>
+                    new Wait(() => i * 0.1f) +
+                    new CreateEntity()) +
+              new Wait(() => rand.Next(1, 5)) +
+              new For(0, 10, i =>
+                    new Wait(() => (float)rand.NextDouble() * 1.0f + 0.2f) +
+                    new CreateEntity()) +
+              new Wait(() => rand.Next(2, 3)));
+
+        Instruction powerupSpawnLogic =
+          new Repeat(
+              new For(0, 10, i =>
+                    new Wait(() => (float)rand.NextDouble() * 1.0f + 5f) +
+                    new CreateEntity()) +
+              new Wait(() => rand.Next(2, 3)));
 
         Vector2 backgroundPosition;
         Texture2D backgroundAppearance;
@@ -93,14 +122,19 @@ namespace HoneyShip
             asteroidAppearance = Content.Load<Texture2D>("asteroid.png");
 
             powerUpAppearance = Content.Load<Texture2D>("powerup.png");
-            currentWeapon = new SoloBlaster(Content);
+
+            weaponsList.Add(new SoloBlaster(Content));
+            weaponsList.Add(new DualBlaster(Content));
+            weaponsList.Add(new TripleBlaster(Content));
+            weaponsList.Add(new QuadBlaster(Content));
+            weaponsList.Add(new PentaBlaster(Content));
+
+            currentWeapon = weaponsList[currentWeaponIndex];
+
             asteroidTopSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, -49);
             asteroidLeftSpawnerPos = new Vector2(-49, Window.ClientBounds.Height / 2);
             asteroidRightSpawnerPos = new Vector2(Window.ClientBounds.Width + 49, Window.ClientBounds.Height / 2);
             asteroidBotSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height + 49);
-
-            // = Content.Load<Song>("ascendency.wma");
-            //MediaPlayer.Play(bgMusic);
 
             mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
             mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
@@ -138,9 +172,33 @@ namespace HoneyShip
                 Exit();
             }
 
+            int currentSpawner = randomGenerator.Next(0, 4);
+            switch (astroidSpawnLogic.Execute(deltaTime))
+            {
+                case InstructionResult.DoneAndCreateAsteroid:
+                    createAstroid(currentSpawner);
+                    break;
+                case InstructionResult.RunningAndCreateAsteroid:
+                    createAstroid(currentSpawner);
+                    break;
+            }
 
-            spawnAstroids();
-            spawnPowerUP();
+            switch (powerupSpawnLogic.Execute(deltaTime))
+            {
+                case InstructionResult.DoneAndCreateAsteroid:
+                    if (powerUPs.Count < 1)
+                    {
+                        createPowerUP();
+                    }
+                    break;
+                case InstructionResult.RunningAndCreateAsteroid:
+                    if (powerUPs.Count < 1)
+                    {
+                        createPowerUP();
+                    }
+                    break;
+            }
+            
             base.Update(gameTime);
         }
 
@@ -161,99 +219,100 @@ namespace HoneyShip
             }
         }
 
-        public void spawnAstroids()
-        {
-            int currentSpawner = randomGenerator.Next(0, 4);
-            switch (gameLogicScriptPC)
-            {
-                case 0:
-                    if (true)
-                    {
-                        gameLogicScriptPC = 1;
-                        iLine1 = 1;
-                        rndNumberLine1 = randomGenerator.Next(20, 100);
-                    }
-                    else
-                        gameLogicScriptPC = 9;
-                    break;
-                case 1:
-                    if (iLine1 <= rndNumberLine1)
-                        gameLogicScriptPC = 2;
-                    else
-                    {
-                        gameLogicScriptPC = 4;
-                        timeToWaitLine4 = (float)(randomGenerator.NextDouble() * 3.0 + 6.0);
-                    }
-                    break;
-                case 2:
-                    createAstroid(currentSpawner);
-                    gameLogicScriptPC = 3;
-                    timeToWaitLine3 = (float)(randomGenerator.NextDouble() * 0.3 + 0.1);
-                    break;
-                case 3:
-                    timeToWaitLine3 -= deltaTime;
-                    if (timeToWaitLine3 > 0.0f)
-                        gameLogicScriptPC = 3;
-                    else
-                    {
-                        gameLogicScriptPC = 1;
-                        iLine1++;
-                    }
-                    break;
-                case 4:
-                    timeToWaitLine4 -= deltaTime;
-                    if (timeToWaitLine4 > 0.0f)
-                        gameLogicScriptPC = 4;
-                    else
-                    {
-                        gameLogicScriptPC = 5;
-                        iLine5 = 1;
-                        rndNumberLine5 = randomGenerator.Next(10, 30);
-                    }
-                    break;
-                case 5:
-                    if (iLine5 <= rndNumberLine5)
-                    {
-                        gameLogicScriptPC = 6;
-                    }
-                    else
-                    {
-                        gameLogicScriptPC = 8;
-                        timeToWaitLine8 = (float)(randomGenerator.NextDouble() * 2.0 + 5.0);
-                    }
-                    break;
-                case 6:
-                    createAstroid(currentSpawner);
-                    gameLogicScriptPC = 7;
-                    timeToWaitLine7 = (float)(randomGenerator.NextDouble() * 1.5 + 0.5);
-                    break;
-                case 7:
-                    timeToWaitLine7 -= deltaTime;
-                    if (timeToWaitLine7 > 0)
-                        gameLogicScriptPC = 7;
-                    else
-                    {
-                        gameLogicScriptPC = 5;
-                        iLine5++;
-                    }
-                    break;
-                case 8:
-                    timeToWaitLine8 -= deltaTime;
-                    if (timeToWaitLine8 > 0.0f)
-                        gameLogicScriptPC = 8;
-                    else
-                    {
-                        gameLogicScriptPC = 0;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            //maken van asteroide; denk aan richting en snelheid
-            // locatie waar de asteroide plaatsvindt
-        }
+        /* public void spawnAstroids()
+         {
+             int currentSpawner = randomGenerator.Next(0, 4);
+             switch (gameLogicScriptPC)
+             {
+                 case 0:
+                     if (true)
+                     {
+                         gameLogicScriptPC = 1;
+                         iLine1 = 1;
+                         rndNumberLine1 = randomGenerator.Next(20, 100);
+                     }
+                     else
+                         gameLogicScriptPC = 9;
+                     break;
+                 case 1:
+                     if (iLine1 <= rndNumberLine1)
+                         gameLogicScriptPC = 2;
+                     else
+                     {
+                         gameLogicScriptPC = 4;
+                         timeToWaitLine4 = (float)(randomGenerator.NextDouble() * 3.0 + 6.0);
+                     }
+                     break;
+                 case 2:
+                     createAstroid(currentSpawner);
+                     gameLogicScriptPC = 3;
+                     timeToWaitLine3 = (float)(randomGenerator.NextDouble() * 0.3 + 0.1);
+                     break;
+                 case 3:
+                     timeToWaitLine3 -= deltaTime;
+                     if (timeToWaitLine3 > 0.0f)
+                         gameLogicScriptPC = 3;
+                     else
+                     {
+                         gameLogicScriptPC = 1;
+                         iLine1++;
+                     }
+                     break;
+                 case 4:
+                     timeToWaitLine4 -= deltaTime;
+                     if (timeToWaitLine4 > 0.0f)
+                         gameLogicScriptPC = 4;
+                     else
+                     {
+                         gameLogicScriptPC = 5;
+                         iLine5 = 1;
+                         rndNumberLine5 = randomGenerator.Next(10, 30);
+                     }
+                     break;
+                 case 5:
+                     if (iLine5 <= rndNumberLine5)
+                     {
+                         gameLogicScriptPC = 6;
+                     }
+                     else
+                     {
+                         gameLogicScriptPC = 8;
+                         timeToWaitLine8 = (float)(randomGenerator.NextDouble() * 2.0 + 5.0);
+                     }
+                     break;
+                 case 6:
+                     createAstroid(currentSpawner);
+                     gameLogicScriptPC = 7;
+                     timeToWaitLine7 = (float)(randomGenerator.NextDouble() * 1.5 + 0.5);
+                     break;
+                 case 7:
+                     timeToWaitLine7 -= deltaTime;
+                     if (timeToWaitLine7 > 0)
+                         gameLogicScriptPC = 7;
+                     else
+                     {
+                         gameLogicScriptPC = 5;
+                         iLine5++;
+                     }
+                     break;
+                 case 8:
+                     timeToWaitLine8 -= deltaTime;
+                     if (timeToWaitLine8 > 0.0f)
+                         gameLogicScriptPC = 8;
+                     else
+                     {
+                         gameLogicScriptPC = 0;
+                     }
+                     break;
+                 default:
+                     break;
+             }
+             //maken van asteroide; denk aan richting en snelheid
+             // locatie waar de asteroide plaatsvindt
+         }
+         */
 
-        public void spawnPowerUP()
+        /*public void spawnPowerUP()
         {
             switch (powerUPScriptPC)
             {
@@ -309,7 +368,7 @@ namespace HoneyShip
                     }
                     break;
             }
-        }
+        }*/
 
         public void createPowerUP()
         {
@@ -396,7 +455,9 @@ namespace HoneyShip
                 
                 if (Vector2.Distance(up.position, shipPosition) < 20.0f)
                 {
-                    // TODO : powerup weapon
+                    if (currentWeaponIndex < 5)
+                        currentWeaponIndex++;
+                    currentWeapon = weaponsList[currentWeaponIndex];
                     up.isVisible = false;
                 }
             }
