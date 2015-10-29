@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.75" name="UMLClassDiagram1">
+  <logicalClassDesignerModelMoniker Id="5f12b74b-9690-4d02-88f6-85b18e1e3880" />
+  <nestedChildShapes>
+    <classShape Id="62ecba44-ec0b-46f1-80ed-e8de12061d70" absoluteBounds="0.5, 0.5, 2.75, 1.8632812052965164" hideQualifiedName="false" increaseHeight="0" customColor="181, 193, 223">
+      <classMoniker Id="415d038b-26b3-4ec0-8c57-d1b1941f22e6" LastKnownName="Entity" />
+      <nestedChildShapes>
+        <AttributeElementListCompartment Id="fe214786-20b7-4bb1-aa42-73646ca81663" absoluteBounds="0.515, 0.89, 2.7199999999999998, 0.84179684768120444" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <OperationElementListCompartment Id="fa4832eb-1ba9-4811-a67f-a9f49576bce4" absoluteBounds="0.515, 1.7417968476812045, 2.7199999999999998, 0.52148435761531187" name="OperationsCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="cb3a5db0-c0cf-4968-b685-bef1dd808a60" absoluteBounds="3.5, 0.5, 2.75, 7.9492185165484734" hideQualifiedName="false" increaseHeight="0" customColor="181, 193, 223">
+      <classMoniker Id="f4bf328e-c506-4d6e-b57d-77000348bc4f" LastKnownName="HoneyShipGame" />
+      <nestedChildShapes>
+        <AttributeElementListCompartment Id="702138ed-5c77-469d-a004-aeb51c6bd1d5" absoluteBounds="3.515, 0.89, 2.7199999999999998, 5.6464841986695919" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <OperationElementListCompartment Id="de2d76a4-1a12-414d-b514-07efb37af893" absoluteBounds="3.515, 6.5464841986695914, 2.7199999999999998, 1.8027343178788819" name="OperationsCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</logicalClassDesignerDiagram>

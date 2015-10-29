@@ -40,6 +40,10 @@ namespace HoneyShip
                 {
                     shipDelta += new Vector2(-(float)Math.Cos((rotationAngle)), -(float)Math.Sin((rotationAngle)));
                 }
+                if(ks.IsKeyDown(Keys.LeftShift))
+                {
+                    shipDelta = shipDelta * 2f;
+                }
                 return shipDelta;
         }
 

@@ -7,8 +7,10 @@ using System.Text;
 
 namespace HoneyShip
 {
-    public class Entity
+    public class Entity 
     {
+        // Entity is alles wat vaker wordt aangemaakt 
+        //en is in dit geval een samengevoegde klasse van Bullet, Astroids en powerup
         public Texture2D appearance;
 
         public Vector2 position;

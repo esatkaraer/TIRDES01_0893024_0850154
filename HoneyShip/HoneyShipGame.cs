@@ -6,16 +6,17 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using SlimDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace HoneyShip
 {
-    //enum maakt volgorde van de switch
     enum InstructionResult
     {
         Done,
@@ -25,14 +26,13 @@ namespace HoneyShip
     }
     public class HoneyShipGame : Game
     {
-        // commando geven om sounds uit te voeren
         [DllImport("winmm.dll")]
         static extern Int32 mciSendString(string command, StringBuilder buffer, int bufferSize, IntPtr hwndCallback);
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch; // postbode
+        SpriteBatch spriteBatch;
         SpriteFont gameFont;
-        int hitCount = 0; // ++
+        int hitCount = 0;
         Random randomGenerator = new Random();
         List<Weapon<Entity>> weaponsList = new List<Weapon<Entity>>();
         int currentWeaponIndex = 0;
@@ -46,13 +46,14 @@ namespace HoneyShip
         int powerUPScriptPC = 0;
         int iLine1PowerUP,rndNumberLine1PowerUP;
         float timeToWaitLine3PowerUP, timeToWaitLine4PowerUP;*/
+        SlimDX.DirectInput.Joystick joystick = null;
 
         float deltaTime;
         float rotationAngle;
         float mousePositionAngle;
 
         InputController input =
-           new MainController();
+           new GamepadController();
 
         public HoneyShipGame()
         {
@@ -88,22 +89,24 @@ namespace HoneyShip
         Texture2D shipAppearance;
         Texture2D bulletAppearance;
         Texture2D asteroidAppearance;
+        Texture2D powerUpAppearance;
+
         Vector2 asteroidTopSpawnerPos;
         Vector2 asteroidBotSpawnerPos;
         Vector2 asteroidLeftSpawnerPos;
         Vector2 asteroidRightSpawnerPos;
 
-        Texture2D powerUpAppearance;
+        int screenWidth;
+        int screenHeight;
 
-        Song bgMusic;
-
-        float friction = 0.1f;
         int score = 0;
         List<Entity> bullets = new List<Entity>();
         //list aanmaken voor alle astroids
         List<Entity> asteroidList = new List<Entity>();
         List<Entity> powerUPs = new List<Entity>();
+
         Weapon<Entity> currentWeapon;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -114,7 +117,11 @@ namespace HoneyShip
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             backgroundPosition = new Vector2(-150.0f,-150.0f);
-            shipPosition = new Vector2(300.0f, 200.0f);
+            screenWidth = Window.ClientBounds.Width;
+            screenHeight = Window.ClientBounds.Height;
+
+            shipPosition = new Vector2((float)(screenWidth / 2), (float)(screenHeight / 2));
+
             backgroundAppearance = Content.Load<Texture2D>("background.jpg");
 
             shipAppearance = Content.Load<Texture2D>("ship.png");
@@ -138,13 +145,11 @@ namespace HoneyShip
             asteroidRightSpawnerPos = new Vector2(Window.ClientBounds.Width + 49, Window.ClientBounds.Height / 2);
             asteroidBotSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height + 49);
 
-            // gevonden
-            mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
-            mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
-
+            //mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
+            //mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
          
-   
             gameFont = Content.Load<SpriteFont>("spaceFont");
+   
         }
 
         protected override void UnloadContent()
@@ -162,20 +167,23 @@ namespace HoneyShip
 
             shipPosition += input.ShipMovement(rotationAngle) * 2.0f;
 
+            //Geef aan wapen door waar schippositie is , welke hoek hij moet schieten en hoe kogel eruit ziet.
             currentWeapon.Update(deltaTime, shipPosition,rotationAngle,bulletAppearance);
+
             if(input.isShooting)
             {
                     currentWeapon.pullTrigger();
-
             }
+            //alle bullets die zijn aangemaakt in de wapen. zetten we in de lijst van bullets die al geschoten.
             bullets.AddRange(currentWeapon.newBullets());
 
             if (!Window.ClientBounds.Contains(shipPosition))
             {
                 Exit();
             }
-
+            //selecteer random spawner ( top left right bottom )
             int currentSpawner = randomGenerator.Next(0, 4);
+
             switch (astroidSpawnLogic.Execute(deltaTime))
             {
                 case InstructionResult.DoneAndCreateAsteroid:
@@ -205,11 +213,11 @@ namespace HoneyShip
             base.Update(gameTime);
         }
 
-        public void shoot()
+        /*public void shoot()
         {
 
         }
-
+        */
         public void updateBullets()
         {
             foreach (Entity b in bullets)
@@ -459,13 +467,18 @@ namespace HoneyShip
                 {
                     up.isVisible = false;
                 }
-                
+                //checken of onze schip en een powerup elkaar "raken"
                 if (Vector2.Distance(up.position, shipPosition) < 20.0f)
                 {
-                    if (currentWeaponIndex < 5)
+                    //als weapons niet beste is dan maken we wapen beter.
+                    if (currentWeaponIndex < 4)
+                    {
                         currentWeaponIndex++;
+                    }
                     currentWeapon = weaponsList[currentWeaponIndex];
                     up.isVisible = false;
+                    SoundPlayer powerupSound = new SoundPlayer(@"C:\Users\esatk\Desktop\powerup.wav");
+                    powerupSound.Play();
                 }
             }
         }
@@ -490,13 +503,14 @@ namespace HoneyShip
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
             spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle + MathHelper.PiOver2, origin, 1.0f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(gameFont, "Score : " + score, new Vector2(10, 10), Color.White);
+            spriteBatch.DrawString(gameFont, "Current Weapon : " + currentWeapon.GetType().Name, new Vector2(10, screenHeight - 20), Color.White);
             
             // powerups op het scherm tekenen
             foreach (Entity pu in powerUPs)
             {
                 pu.draw(spriteBatch);
             }
-            
+
             // powerup laten verwijderen voorbij de kader
             updatePowerUP();
             for (int i = 0; i < powerUPs.Count; i++)
