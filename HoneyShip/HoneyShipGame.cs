@@ -15,6 +15,7 @@ using System.Text;
 
 namespace HoneyShip
 {
+    //enum maakt volgorde van de switch
     enum InstructionResult
     {
         Done,
@@ -24,13 +25,14 @@ namespace HoneyShip
     }
     public class HoneyShipGame : Game
     {
+        // commando geven om sounds uit te voeren
         [DllImport("winmm.dll")]
         static extern Int32 mciSendString(string command, StringBuilder buffer, int bufferSize, IntPtr hwndCallback);
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        SpriteBatch spriteBatch; // postbode
         SpriteFont gameFont;
-        int hitCount = 0;
+        int hitCount = 0; // ++
         Random randomGenerator = new Random();
         List<Weapon<Entity>> weaponsList = new List<Weapon<Entity>>();
         int currentWeaponIndex = 0;
@@ -136,6 +138,7 @@ namespace HoneyShip
             asteroidRightSpawnerPos = new Vector2(Window.ClientBounds.Width + 49, Window.ClientBounds.Height / 2);
             asteroidBotSpawnerPos = new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height + 49);
 
+            // gevonden
             mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
             mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
 
