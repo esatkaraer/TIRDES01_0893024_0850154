@@ -123,7 +123,7 @@ namespace HoneyShip
             shipPosition = new Vector2((float)(screenWidth / 2), (float)(screenHeight / 2));
 
             backgroundAppearance = Content.Load<Texture2D>("background.jpg");
-            
+
             shipAppearance = Content.Load<Texture2D>("ship.png");
 
             bulletAppearance = Content.Load<Texture2D>("plasma.png");
@@ -147,9 +147,9 @@ namespace HoneyShip
 
             //mciSendString(@"open C:\Users\esatk\Desktop\Ascendency.wav type waveaudio alias Ascendency", null, 0, IntPtr.Zero);
             //mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
-
+         
             gameFont = Content.Load<SpriteFont>("spaceFont");
-
+   
         }
 
         protected override void UnloadContent()
@@ -172,7 +172,7 @@ namespace HoneyShip
 
             if(input.isShooting)
             {
-                currentWeapon.pullTrigger();
+                    currentWeapon.pullTrigger();
             }
             //alle bullets die zijn aangemaakt in de wapen. zetten we in de lijst van bullets die al geschoten.
             bullets.AddRange(currentWeapon.newBullets());
@@ -455,10 +455,14 @@ namespace HoneyShip
 
         public void updatePowerUP()
         {
+            // powerups in een list entity
             foreach (Entity up in powerUPs)
             {
+                // powerups de direction aangeven waar die heen moet
                 up.position += up.direction;
                 Rectangle offSetRec = new Rectangle(Window.ClientBounds.X - 50, Window.ClientBounds.Y - 50, Window.ClientBounds.Width + 100, Window.ClientBounds.Height + 100);
+
+                // powerups 
                 if (!offSetRec.Contains(up.position))
                 {
                     up.isVisible = false;
@@ -481,29 +485,34 @@ namespace HoneyShip
 
         protected override void Draw(GameTime gameTime)
         {
+            // achtergrond plaats geven
             GraphicsDevice.Clear(Color.CornflowerBlue);
             Vector2 origin = new Vector2();
 
+            // plaats geven van de ship zelf
             origin.X = shipAppearance.Width / 2;
             origin.Y = shipAppearance.Height / 2;
 
+            // plaats geven van de asteroid zelf
             Vector2 astroidOrigin = new Vector2();
             astroidOrigin.X = asteroidAppearance.Width / 2;
             astroidOrigin.Y = asteroidAppearance.Height / 2;
 
-
+            // achtergrond tekenen postbode aangeven en laten bezorgen
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundAppearance, backgroundPosition, Color.White);
             spriteBatch.Draw(shipAppearance, shipPosition, null, Color.White, mousePositionAngle + MathHelper.PiOver2, origin, 1.0f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(gameFont, "Score : " + score, new Vector2(10, 10), Color.White);
             spriteBatch.DrawString(gameFont, "Current Weapon : " + currentWeapon.GetType().Name, new Vector2(10, screenHeight - 20), Color.White);
-
+            
+            // powerups op het scherm tekenen
             foreach (Entity pu in powerUPs)
             {
                 pu.draw(spriteBatch);
             }
-            updatePowerUP();
 
+            // powerup laten verwijderen voorbij de kader
+            updatePowerUP();
             for (int i = 0; i < powerUPs.Count; i++)
             {
                 if (!powerUPs[i].isVisible)
@@ -512,6 +521,7 @@ namespace HoneyShip
                 }
             }
 
+            // alle asteroid in de list zetten die zichtbaar zijn op het scherm
             foreach(Entity a in asteroidList)
             {
                 a.draw(spriteBatch);
@@ -519,6 +529,7 @@ namespace HoneyShip
 
             updateAstroid();
 
+            // asteroid laten verwijderen voorbij de kader
             for (int i = 0; i < asteroidList.Count; i++)
             {
                 if(!asteroidList[i].isVisible)
@@ -527,10 +538,13 @@ namespace HoneyShip
                 }
             }
 
+            // teken bullet en bullet in een list entity
             foreach (Entity b in bullets)
             {
                 b.draw(spriteBatch);
             }
+
+            // bullet verwijderen als die niet in het scherm aanwezig is
             updateBullets();
             for (int i = 0; i < bullets.Count; i++)
             {
@@ -540,8 +554,10 @@ namespace HoneyShip
                 }
             }
 
+            // postbode taak is gedaan
             spriteBatch.End();
 
+            // uitvoeren gameTime() en teken het
             base.Draw(gameTime);
         }
     }
