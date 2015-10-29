@@ -46,14 +46,13 @@ namespace HoneyShip
         int powerUPScriptPC = 0;
         int iLine1PowerUP,rndNumberLine1PowerUP;
         float timeToWaitLine3PowerUP, timeToWaitLine4PowerUP;*/
-        SlimDX.DirectInput.Joystick joystick = null;
 
         float deltaTime;
         float rotationAngle;
         float mousePositionAngle;
 
         InputController input =
-           new GamepadController();
+           new MainController();
 
         public HoneyShipGame()
         {
