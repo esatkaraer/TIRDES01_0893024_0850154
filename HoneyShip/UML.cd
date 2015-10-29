@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="HoneyShip.Entity">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAIAAAABIAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.HoneyShipGame">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GSSRmMAAAJFAG4ABAQCIAgABgQAACBgAgAAgQAoAAIU=</HashCode>
+      <FileName>HoneyShipGame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.GamepadController" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAEAAAAAABAAAAAAAAAAAAAADAAACAAAAQA=</HashCode>
+      <FileName>InputControllers\GamepadController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HoneyShip.MainController" BaseTypeListCollapsed="true">
+    <Position X="12" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAABAAAAAAAAAAAAAAEAQACAAAAQA=</HashCode>
+      <FileName>InputControllers\MainController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HoneyShip.Program">
+    <Position X="17.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Blaster">
+    <Position X="4.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAQACEAAAgAAAAAAAAAACAAAgAAAAAAAAAAAAEgAQAA=</HashCode>
+      <FileName>Weapons\Blaster.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="HoneyShip.SoloBlaster">
+    <Position X="1" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Weapons\SoloBlaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.CreateEntity">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Scripts\CreateEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.For">
+    <Position X="4.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAQBAQgAAAAAAAAAQAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Scripts\For.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.Instruction">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAQAQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Scripts\Instruction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.Repeat">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAQAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Scripts\Repeat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.Semicolon">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAQAAAAAAAAAAAAABAAAAAAAIAEAAAA=</HashCode>
+      <FileName>Scripts\Semicolon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.Scripts.Wait">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQBAQAABAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Scripts\Wait.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.HoneyShip.DualBlaster">
+    <Position X="9" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Weapons\DualBlaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.HoneyShip.PentaBlaster">
+    <Position X="1.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Weapons\PentaBlaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.HoneyShip.QuadBlaster">
+    <Position X="9" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Weapons\QuadBlaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoneyShip.HoneyShip.TripleBlaster">
+    <Position X="7.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Weapons\TripleBlaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="HoneyShip.InputController">
+    <Position X="13.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>InputControllers\InputController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HoneyShip.Weapon&lt;Ammunition&gt;">
+    <Position X="0.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQAA=</HashCode>
+      <FileName>Weapons\Weapon.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="HoneyShip.InstructionResult">
+    <Position X="6.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAIIAAAQAAAAAAA=</HashCode>
+      <FileName>HoneyShipGame.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

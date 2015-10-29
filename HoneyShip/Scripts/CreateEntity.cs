@@ -7,6 +7,7 @@ namespace HoneyShip.Scripts
 {
     class CreateEntity : Instruction
     {
+
         public override InstructionResult Execute(float dt)
         {
             return InstructionResult.DoneAndCreateAsteroid;

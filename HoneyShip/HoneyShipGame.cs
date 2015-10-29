@@ -14,6 +14,7 @@ using System.Media;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Yuml.Net;
 
 namespace HoneyShip
 {
@@ -148,7 +149,31 @@ namespace HoneyShip
             //mciSendString(@"play Ascendency", null, 0, IntPtr.Zero);
          
             gameFont = Content.Load<SpriteFont>("spaceFont");
-   
+
+            var types = new List<Type>
+                {
+                    typeof(HoneyShipGame),
+                    typeof(GamepadController),
+                    typeof(InputController),
+                    typeof(MainController),
+                    typeof(CreateEntity),
+                    typeof(For),
+                    typeof(Instruction),
+                    typeof(Repeat),
+                    typeof(Semicolon),
+                    typeof(Wait),
+                    typeof(Blaster),
+                    typeof(DualBlaster),
+                    typeof(PentaBlaster),
+                    typeof(QuadBlaster),
+                    typeof(SoloBlaster),
+                    typeof(TripleBlaster),
+                    typeof(Weapon<Entity>),
+                    typeof(Entity)
+                };
+            var factory = new YumlFactory(types);
+            var imageUri = factory.GenerateClassDiagramUri();
+            Console.WriteLine("Test");
         }
 
         protected override void UnloadContent()

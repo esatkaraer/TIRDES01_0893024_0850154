@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoneyShip", "HoneyShip\HoneyShip.csproj", "{CBA061C3-3A55-405D-82E1-1533804A1A62}"
 EndProject
-Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "HoneyShipUML", "HoneyShipUML\HoneyShipUML.modelproj", "{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,16 +25,6 @@ Global
 		{CBA061C3-3A55-405D-82E1-1533804A1A62}.Release|Mixed Platforms.Build.0 = Release|x86
 		{CBA061C3-3A55-405D-82E1-1533804A1A62}.Release|x86.ActiveCfg = Release|x86
 		{CBA061C3-3A55-405D-82E1-1533804A1A62}.Release|x86.Build.0 = Release|x86
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{296C5FE6-FF1F-46AF-A9CF-0364C1EB83A0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
